@@ -257,9 +257,9 @@
     let currentText = '';
     let detectedCodes = new Set(); 
 
-    // MEJORADO: Ahora buscan el patrón eliminando restricciones rígidas para que no se escapen
-    const regex1 = /[A-Z]{2}\d{9}[A-Z]{2}/i; // Abre el abanico a cualquier país final (no solo ES)
-    const regex2 = /[A-Z]{2}[A-Z0-9]{8}\d{12}[A-Z0-9]/i;
+    // CORRECCIÓN: Añadida la 'L' al inicio de los patrones válidos de Correos
+    const regex1 = /\b([LPCREU][A-Z]\d{9}[A-Z]{2})\b/i; 
+    const regex2 = /\b([LPCREU][A-Z][A-Z0-9]{8}\d{12}[A-Z0-9])\b/i;
 
     function generateBarcode(text) {
         try {
@@ -289,19 +289,25 @@
     }
 
     function extractCode(rawText) {
-        // TRUCO EXTRA: Limpiamos espacios y guiones raros que a veces meten los SMS automáticamente
-        // pero mantenemos el bloque principal para analizarlo
-        let cleanText = rawText.replace(/[\s-]/g, ''); 
+        if (!rawText) return null;
 
-        let match = cleanText.match(regex1);
-        if (match) return match[0].toUpperCase();
+        // Búsqueda limpia respetando límites de palabras independientes (\b)
+        let match = rawText.match(regex1);
+        if (match) return match[1].toUpperCase();
 
-        match = cleanText.match(regex2);
-        if (match) return match[0].toUpperCase();
+        match = rawText.match(regex2);
+        if (match) return match[1].toUpperCase();
 
-        // Si con el texto ultra-limpio no encuentra, probamos una búsqueda por encima en el bruto original
-        match = rawText.match(regex1);
-        if (match) return match[0].toUpperCase();
+        // Búsqueda secundaria eliminando espacios internos si el SMS viene formateado raro
+        let cleanText = rawText.replace(/[\s-]/g, '');
+        const regexClean1 = /([LPCREU][A-Z]\d{9}[A-Z]{2})/i;
+        const regexClean2 = /([LPCREU][A-Z][A-Z0-9]{8}\d{12}[A-Z0-9])/i;
+
+        match = cleanText.match(regexClean1);
+        if (match) return match[1].toUpperCase();
+
+        match = cleanText.match(regexClean2);
+        if (match) return match[1].toUpperCase();
 
         return null;
     }
