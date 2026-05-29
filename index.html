@@ -36,27 +36,48 @@
             gap: 20px;
         }
 
+        /* Encabezado adaptado para incluir el logo a la izquierda */
         header {
-            text-align: center;
+            display: flex;
+            align-items: center;
+            gap: 15px;
             background-color: #ffde00; /* Amarillo Correos */
-            padding: 18px;
+            padding: 16px;
             border-radius: 16px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
             border-bottom: 4px solid #002f6c;
+            text-align: left; /* Alineación al texto para que encaje con el logo */
+        }
+
+        /* Estilo para el logo pequeño dentro del cuadro amarillo */
+        .header-logo {
+            width: 50px;
+            height: 50px;
+            object-fit: cover;
+            border-radius: 10px; /* Bordes ligeramente suavizados */
+            box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+            flex-shrink: 0; /* Evita que el logo se encoja en pantallas pequeñas */
+        }
+
+        .header-text {
+            display: flex;
+            flex-direction: column;
         }
 
         header h1 {
-            font-size: 1.4rem;
+            font-size: 1.3rem;
             color: #002f6c;
             font-weight: 800;
             text-transform: uppercase;
+            line-height: 1.2;
         }
 
         header p {
-            font-size: 0.85rem;
+            font-size: 0.8rem;
             color: #002f6c;
-            margin-top: 4px;
+            margin-top: 2px;
             font-weight: 500;
+            opacity: 0.9;
         }
 
         /* Zona de previsualización del código de barras */
@@ -214,8 +235,11 @@
 
 <div class="app-container">
     <header>
-        <h1>Admitidos Correos</h1>
-        <p>Buzón Inteligente de SMS</p>
+        <img src="correos.jpg" alt="Logo Correos" class="header-logo">
+        <div class="header-text">
+            <h1>Admitidos Correos</h1>
+            <p>Buzón Inteligente de SMS</p>
+        </div>
     </header>
 
     <div class="preview-area">
@@ -264,7 +288,7 @@
 
             JsBarcode("#barcode", text, {
                 format: "CODE128",
-                width: 1.4, // Un pelín más fino para que el código largo quepa holgado
+                width: 1.4, 
                 height: 75,
                 displayValue: true,
                 fontSize: 13,
@@ -284,28 +308,20 @@
         }
     }
 
-    // NUEVA LÓGICA DE EXTRACCIÓN INFALIBLE
     function extractCode(rawText) {
         if (!rawText) return null;
 
-        // Rompemos el SMS en palabras reales separadas por espacios
         const words = rawText.split(/\s+/);
 
         for (let word of words) {
-            // Buscamos dónde empieza exactamente alguna de las letras válidas de Correos (L, P, C, R, E, U)
-            // seguida de otra letra mayúscula/minúscula
             const matchIndex = word.search(/[LPCREU][A-Z]/i);
             
             if (matchIndex !== -1) {
-                // Recortamos la palabra justo donde empieza el código real, eliminando "envio" o cualquier prefijo pegado
                 let potentialCode = word.substring(matchIndex).toUpperCase();
 
-                // Validamos que lo recortado cumpla con la longitud y estructura de los dos estándares analizados
-                // Patrón 1: 13 caracteres (Ej: PQ123456789ES)
                 if (/^[LPCREU][A-Z]\d{9}[A-Z]{2}$/i.test(potentialCode)) {
                     return potentialCode;
                 }
-                // Patrón 2: Códigos logísticos largos (Ej: PQABAC0408979900135210P)
                 if (/^[LPCREU][A-Z][A-Z0-9]{8}\d{12}[A-Z0-9]$/i.test(potentialCode)) {
                     return potentialCode;
                 }
