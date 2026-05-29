@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Correos</title>
+    <title>Admitidos Correos - Inteligente</title>
     
     <link rel="apple-touch-icon" href="correos.jpg">
     
@@ -33,53 +33,49 @@
             max-width: 450px;
             display: flex;
             flex-direction: column;
-            gap: 24px;
+            gap: 20px;
         }
 
-        /* Encabezado con los colores oficiales de Correos */
         header {
             text-align: center;
-            margin-top: 15px;
             background-color: #ffde00; /* Amarillo Correos */
-            padding: 20px;
+            padding: 18px;
             border-radius: 16px;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-            border-bottom: 4px solid #002f6c; /* Detalle Azul Correos */
+            border-bottom: 4px solid #002f6c;
         }
 
         header h1 {
-            font-size: 1.5rem;
-            color: #002f6c; /* Azul Correos */
+            font-size: 1.4rem;
+            color: #002f6c;
             font-weight: 800;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
         }
 
         header p {
             font-size: 0.85rem;
             color: #002f6c;
-            margin-top: 6px;
+            margin-top: 4px;
             font-weight: 500;
-            opacity: 0.9;
         }
 
-        /* Zona gris de previsualización de la tarjeta */
+        /* Zona de previsualización del código de barras */
         .preview-area {
             background: #eef2f7;
             border-radius: 20px;
-            padding: 35px 20px;
+            padding: 25px 15px;
             display: flex;
             justify-content: center;
             align-items: center;
-            min-height: 240px;
+            min-height: 200px;
             box-shadow: inset 0 2px 10px rgba(0,0,0,0.06);
         }
 
-        /* Cuadro solicitado: Blanco, borde negro grueso y separado internamente */
+        /* Cuadro solicitado: Blanco, borde negro grueso y separado */
         #barcode-card {
             background-color: #ffffff;
             border: 5px solid #000000;
-            padding: 28px;
+            padding: 24px;
             display: inline-flex;
             flex-direction: column;
             align-items: center;
@@ -93,26 +89,26 @@
             height: auto;
         }
 
-        /* Controles y Botonera Estilo Móvil */
+        /* Controles */
         .controls {
             display: flex;
             flex-direction: column;
-            gap: 14px;
+            gap: 12px;
         }
 
         .btn {
             width: 100%;
-            padding: 18px;
+            padding: 16px;
             border: none;
             border-radius: 14px;
-            font-size: 1.05rem;
+            font-size: 1rem;
             font-weight: 700;
             cursor: pointer;
             display: flex;
             align-items: center;
             justify-content: center;
-            gap: 12px;
-            transition: transform 0.1s ease, background-color 0.2s ease;
+            gap: 10px;
+            transition: transform 0.1s ease;
             -webkit-tap-highlight-color: transparent;
         }
 
@@ -120,26 +116,15 @@
             transform: scale(0.97);
         }
 
-        /* Botón de Pegar: Azul Correos */
         .btn-primary {
             background-color: #002f6c;
             color: #ffffff;
-            box-shadow: 0 4px 12px rgba(0, 47, 108, 0.2);
+            box-shadow: 0 4px 12px rgba(0, 47, 108, 0.15);
         }
 
-        .btn-primary:active {
-            background-color: #001f47;
-        }
-
-        /* Botón de Guardar: Verde de confirmación */
         .btn-success {
             background-color: #24a148;
             color: #ffffff;
-            box-shadow: 0 4px 12px rgba(36, 161, 72, 0.2);
-        }
-
-        .btn-success:active {
-            background-color: #1b7a36;
         }
 
         .btn:disabled {
@@ -150,16 +135,68 @@
             transform: none;
         }
 
-        .placeholder-text {
-            color: #727c8e;
-            font-size: 0.95rem;
-            text-align: center;
-            font-weight: 500;
-            line-height: 1.4;
+        /* Sección del Historial / Lista de códigos detectados */
+        .history-section {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 16px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+            border: 1px solid #e2e5ec;
         }
 
-        .hidden {
-            display: none !important;
+        .history-section h2 {
+            font-size: 0.95rem;
+            color: #002f6c;
+            margin-bottom: 10px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            border-bottom: 2px solid #ffde00;
+            padding-bottom: 4px;
+        }
+
+        .code-list {
+            list-style: none;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            max-height: 180px;
+            overflow-y: auto;
+        }
+
+        .code-item {
+            background: #f4f6f9;
+            padding: 12px;
+            border-radius: 10px;
+            font-size: 0.95rem;
+            font-family: monospace;
+            font-weight: bold;
+            color: #333;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-left: 4px solid #002f6c;
+            cursor: pointer;
+        }
+
+        .code-item:active {
+            background: #e2e5ec;
+        }
+
+        .code-item::after {
+            content: "⚡ Ver";
+            font-size: 0.75rem;
+            color: #002f6c;
+            background: #ffde00;
+            padding: 4px 8px;
+            border-radius: 6px;
+            font-family: -apple-system, sans-serif;
+        }
+
+        .placeholder-text {
+            color: #727c8e;
+            font-size: 0.9rem;
+            text-align: center;
+            font-weight: 500;
         }
     </style>
 </head>
@@ -167,8 +204,8 @@
 
 <div class="app-container">
     <header>
-        <h1>Envios Correos</h1>
-        <p>Generador EAN-128 desde Portapapeles</p>
+        <h1>Admitidos Correos</h1>
+        <p>Buzón Inteligente de SMS</p>
     </header>
 
     <div class="preview-area">
@@ -176,17 +213,26 @@
             <svg id="barcode"></svg>
         </div>
         <div id="placeholder" class="placeholder-text">
-            Toca el botón azul para generar el código a partir de los datos copiados
+            Copia el SMS completo y pulsa el botón azul para extraer el código automáticamente.
         </div>
     </div>
 
     <div class="controls">
         <button id="btn-paste" class="btn btn-primary">
-            📋 Pegar y Generar Código
+            📋 Procesar Texto de SMS
         </button>
         <button id="btn-save" class="btn btn-success" disabled>
             💾 Guardar en Carrete / Fotos
         </button>
+    </div>
+
+    <div class="history-section">
+        <h2>Códigos Detectados</h2>
+        <ul id="code-list" class="code-list">
+            <li id="no-codes" class="placeholder-text" style="padding: 10px; font-family: inherit; font-weight: normal;">
+                Ningún código procesado aún.
+            </li>
+        </ul>
     </div>
 </div>
 
@@ -195,25 +241,31 @@
     const btnSave = document.getElementById('btn-save');
     const barcodeCard = document.getElementById('barcode-card');
     const placeholder = document.getElementById('placeholder');
+    const codeList = document.getElementById('code-list');
+    const noCodes = document.getElementById('no-codes');
+    
     let currentText = '';
+    let detectedCodes = new Set(); // Evita códigos duplicados en la lista
 
-    // Función encargada de dibujar el código de barras y el texto
+    // Tus expresiones regulares adaptadas para buscar dentro de bloques de texto globales
+    const regex1 = /[A-Z]{2}\d{9}ES/i;
+    const regex2 = /[A-Z]{2}[A-Z0-9]{8}\d{12}[A-Z0-9]/i;
+
     function generateBarcode(text) {
         try {
             placeholder.classList.add('hidden');
             barcodeCard.classList.remove('hidden');
 
-            // El formato estándar de EAN-128 en desarrollo web se procesa mediante CODE128
             JsBarcode("#barcode", text, {
                 format: "CODE128",
                 width: 2,
                 height: 85,
-                displayValue: true, // Renderiza el texto debajo de las barras automáticamente
+                displayValue: true,
                 fontSize: 15,
                 fontOptions: "bold",
                 font: "monospace",
                 textPosition: "bottom",
-                textMargin: 14, // Espacio de separación del texto
+                textMargin: 14,
                 background: "#ffffff",
                 lineColor: "#000000"
             });
@@ -221,55 +273,92 @@
             currentText = text;
             btnSave.disabled = false;
         } catch (error) {
-            alert('Error al procesar el texto. Verifica que los caracteres sean válidos para EAN-128.');
+            alert('Error al generar el código de barras.');
             console.error(error);
         }
     }
 
-    // Lógica para capturar el portapapeles del iPhone de forma segura
+    // Extrae el código usando tus dos patrones analizados
+    function extractCode(rawText) {
+        // Buscar patrón 1
+        let match = rawText.match(regex1);
+        if (match) return match[0].toUpperCase();
+
+        // Buscar patrón 2
+        match = rawText.match(regex2);
+        if (match) return match[0].toUpperCase();
+
+        return null;
+    }
+
+    function addCodeToList(code) {
+        if (detectedCodes.has(code)) {
+            // Si ya existe, simplemente lo seleccionamos para visualizarlo
+            generateBarcode(code);
+            return;
+        }
+
+        if (noCodes) noCodes.remove();
+        detectedCodes.add(code);
+
+        const li = document.createElement('li');
+        li.className = 'code-item';
+        li.textContent = code;
+        li.addEventListener('click', () => generateBarcode(code));
+        
+        // Lo insertamos arriba del todo de la lista
+        codeList.insertBefore(li, codeList.firstChild);
+        
+        // Lo generamos inmediatamente en pantalla
+        generateBarcode(code);
+    }
+
     btnPaste.addEventListener('click', async () => {
         try {
             const text = await navigator.clipboard.readText();
-            if (text.trim() === '') {
-                alert('El portapapeles está vacío.');
-                return;
-            }
-            generateBarcode(text.trim());
+            processInput(text);
         } catch (err) {
-            // Plan de respaldo si iOS bloquea el acceso automático por permisos locales
-            const fallbackText = prompt("Introduce o pega el código manualmente:");
-            if (fallbackText && fallbackText.trim() !== '') {
-                generateBarcode(fallbackText.trim());
-            }
+            const fallbackText = prompt("Pega el texto completo del SMS aquí:");
+            if (fallbackText) processInput(fallbackText);
         }
     });
 
-    // Lógica para fotografiar el cuadro blanco y forzar la descarga de la imagen en alta definición
+    function processInput(text) {
+        if (!text || text.trim() === '') {
+            alert('El texto está vacío.');
+            return;
+        }
+
+        const foundCode = extractCode(text);
+        
+        if (foundCode) {
+            addCodeToList(foundCode);
+        } else {
+            alert('No se encontró ningún código de Correos válido en el texto pegado.');
+        }
+    }
+
     btnSave.addEventListener('click', () => {
         if (!currentText) return;
 
-        // Se oculta la sombra momentáneamente para que la imagen final sea limpia
         const originalShadow = barcodeCard.style.boxShadow;
         barcodeCard.style.boxShadow = 'none';
 
         html2canvas(barcodeCard, {
-            scale: 3, // Multiplica la resolución por 3 para facilitar la lectura del escáner láser de mano
+            scale: 3,
             backgroundColor: null
         }).then(canvas => {
             barcodeCard.style.boxShadow = originalShadow;
             const imageURI = canvas.toDataURL("image/png");
             const link = document.createElement('a');
-            
-            // Reemplaza caracteres extraños del nombre de archivo para evitar errores de descarga
             const safeName = currentText.replace(/[^a-z0-9]/gi, '_').toLowerCase();
             link.download = `correos_${safeName}.png`;
             link.href = imageURI;
-            
             document.body.appendChild(link);
             link.click();
             document.body.removeChild(link);
         }).catch(err => {
-            alert('No se pudo exportar la imagen en este navegador.');
+            alert('Error al exportar la imagen.');
             console.error(err);
         });
     });
