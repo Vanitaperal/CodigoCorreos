@@ -1,0 +1,266 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Generador EAN-128 Portapapeles</title>
+    <script src="https://cdn.jsdelivr.net/npm/jsbarcode@3.11.5/dist/JsBarcode.all.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+        }
+
+        body {
+            background-color: #f4f6f9;
+            color: #333;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .app-container {
+            width: 100%;
+            max-width: 450px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        header {
+            text-align: center;
+            margin-top: 10px;
+        }
+
+        header h1 {
+            font-size: 1.4rem;
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        header p {
+            font-size: 0.85rem;
+            color: #666;
+            margin-top: 4px;
+        }
+
+        /* Zona de visualización del código de barras */
+        .preview-area {
+            background: #eef1f6;
+            border-radius: 16px;
+            padding: 30px 15px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 220px;
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.05);
+        }
+
+        /* El cuadro solicitado: Blanco, borde negro separado del código */
+        #barcode-card {
+            background-color: #ffffff;
+            border: 4px solid #000000;
+            padding: 24px;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            max-width: 100%;
+        }
+
+        #barcode {
+            max-width: 100%;
+            height: auto;
+        }
+
+        /* Controles de la App en el móvil */
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        .btn {
+            width: 100%;
+            padding: 16px;
+            border: none;
+            border-radius: 12px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: transform 0.1s ease, background-color 0.2s ease;
+            -webkit-tap-highlight-color: transparent;
+        }
+
+        .btn:active {
+            transform: scale(0.98);
+        }
+
+        .btn-primary {
+            background-color: #007aff;
+            color: white;
+        }
+
+        .btn-primary:hover {
+            background-color: #0063cc;
+        }
+
+        .btn-success {
+            background-color: #34c759;
+            color: white;
+        }
+
+        .btn-success:hover {
+            background-color: #28a745;
+        }
+
+        .btn:disabled {
+            background-color: #cccccc;
+            color: #888888;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Estado vacío */
+        .placeholder-text {
+            color: #8e8e93;
+            font-size: 0.95rem;
+            text-align: center;
+            font-style: italic;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+    </style>
+</head>
+<body>
+
+<div class="app-container">
+    <header>
+        <h1>CODIGO ENVIO</h1>
+        <p>Generador EAN-128</p>
+    </header>
+
+    <div class="preview-area">
+        <div id="barcode-card" class="hidden">
+            <svg id="barcode"></svg>
+        </div>
+        <div id="placeholder" class="placeholder-text">
+            Usa el botón de abajo para pegar el texto del portapapeles
+        </div>
+    </div>
+
+    <div class="controls">
+        <button id="btn-paste" class="btn btn-primary">
+            📋 Pegar y Generar Código
+        </button>
+        <button id="btn-save" class="btn btn-success" disabled>
+            💾 Guardar en Fotos / Descargar
+        </button>
+    </div>
+</div>
+
+<script>
+    const btnPaste = document.getElementById('btn-paste');
+    const btnSave = document.getElementById('btn-save');
+    const barcodeCard = document.getElementById('barcode-card');
+    const placeholder = document.getElementById('placeholder');
+    let currentText = '';
+
+    // Función para generar el código EAN-128
+    function generateBarcode(text) {
+        try {
+            placeholder.classList.add('hidden');
+            barcodeCard.classList.remove('hidden');
+
+            // Configuramos JsBarcode para usar CODE128 (la base de EAN-128)
+            JsBarcode("#barcode", text, {
+                format: "CODE128",
+                width: 2,
+                height: 80,
+                displayValue: true, // Esto pinta el texto debajo automáticamente
+                fontSize: 16,
+                fontOptions: "bold",
+                font: "monospace",
+                textPosition: "bottom",
+                textMargin: 12,
+                background: "#ffffff",
+                lineColor: "#000000"
+            });
+
+            currentText = text;
+            btnSave.disabled = false; // Activamos el botón de guardar
+        } catch (error) {
+            alert('Error al generar el código de barras. Asegúrate de que los caracteres sean válidos.');
+            console.error(error);
+        }
+    }
+
+    // Evento: Leer portapapeles de forma segura
+    btnPaste.addEventListener('click', async () => {
+        try {
+            // Solicita permiso nativo al navegador/móvil para leer el portapapeles
+            const text = await navigator.clipboard.readText();
+            
+            if (text.trim() === '') {
+                alert('El portapapeles está vacío o no contiene texto válido.');
+                return;
+            }
+
+            generateBarcode(text.trim());
+        } catch (err) {
+            // Si el navegador bloquea el acceso directo o no es HTTPS, pedimos un fallback manual
+            const fallbackText = prompt("No pudimos acceder automáticamente al portapapeles por permisos del móvil. Pega el texto aquí manualmente:");
+            if (fallbackText && fallbackText.trim() !== '') {
+                generateBarcode(fallbackText.trim());
+            }
+        }
+    });
+
+    // Evento: Renderizar el cuadro como imagen y descargar
+    btnSave.addEventListener('click', () => {
+        if (!currentText) return;
+
+        // Desactivamos momentáneamente sombras para un renderizado limpio
+        const originalShadow = barcodeCard.style.boxShadow;
+        barcodeCard.style.boxShadow = 'none';
+
+        // Usamos html2canvas para convertir el div #barcode-card en una imagen real
+        html2canvas(barcodeCard, {
+            scale: 3, // Multiplicamos por 3 para que tenga alta resolución al guardarse en el móvil
+            backgroundColor: null
+        }).then(canvas => {
+            barcodeCard.style.boxShadow = originalShadow;
+
+            // Convertimos a enlace de descarga PNG
+            const imageURI = canvas.toDataURL("image/png");
+            const link = document.createElement('a');
+            
+            // Nombre de archivo limpio basado en el contenido
+            const safeName = currentText.replace(/[^a-z0-9]/gi, '_').toLowerCase();
+            link.download = `ean128_${safeName}.png`;
+            link.href = imageURI;
+            
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+        }).catch(err => {
+            alert('Error al procesar la imagen para guardar.');
+            console.error(err);
+        });
+    });
+</script>
+
+</body>
+</html>
