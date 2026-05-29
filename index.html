@@ -257,10 +257,6 @@
     let currentText = '';
     let detectedCodes = new Set(); 
 
-    // CORRECCIÓN: Añadida la 'L' al inicio de los patrones válidos de Correos
-    const regex1 = /\b([LPCREU][A-Z]\d{9}[A-Z]{2})\b/i; 
-    const regex2 = /\b([LPCREU][A-Z][A-Z0-9]{8}\d{12}[A-Z0-9])\b/i;
-
     function generateBarcode(text) {
         try {
             if (placeholder) placeholder.classList.add('hidden');
@@ -268,10 +264,10 @@
 
             JsBarcode("#barcode", text, {
                 format: "CODE128",
-                width: 1.5, 
+                width: 1.4, // Un pelín más fino para que el código largo quepa holgado
                 height: 75,
                 displayValue: true,
-                fontSize: 14,
+                fontSize: 13,
                 fontOptions: "bold",
                 font: "monospace",
                 textPosition: "bottom",
@@ -288,27 +284,33 @@
         }
     }
 
+    // NUEVA LÓGICA DE EXTRACCIÓN INFALIBLE
     function extractCode(rawText) {
         if (!rawText) return null;
 
-        // Búsqueda limpia respetando límites de palabras independientes (\b)
-        let match = rawText.match(regex1);
-        if (match) return match[1].toUpperCase();
+        // Rompemos el SMS en palabras reales separadas por espacios
+        const words = rawText.split(/\s+/);
 
-        match = rawText.match(regex2);
-        if (match) return match[1].toUpperCase();
+        for (let word of words) {
+            // Buscamos dónde empieza exactamente alguna de las letras válidas de Correos (L, P, C, R, E, U)
+            // seguida de otra letra mayúscula/minúscula
+            const matchIndex = word.search(/[LPCREU][A-Z]/i);
+            
+            if (matchIndex !== -1) {
+                // Recortamos la palabra justo donde empieza el código real, eliminando "envio" o cualquier prefijo pegado
+                let potentialCode = word.substring(matchIndex).toUpperCase();
 
-        // Búsqueda secundaria eliminando espacios internos si el SMS viene formateado raro
-        let cleanText = rawText.replace(/[\s-]/g, '');
-        const regexClean1 = /([LPCREU][A-Z]\d{9}[A-Z]{2})/i;
-        const regexClean2 = /([LPCREU][A-Z][A-Z0-9]{8}\d{12}[A-Z0-9])/i;
-
-        match = cleanText.match(regexClean1);
-        if (match) return match[1].toUpperCase();
-
-        match = cleanText.match(regexClean2);
-        if (match) return match[1].toUpperCase();
-
+                // Validamos que lo recortado cumpla con la longitud y estructura de los dos estándares analizados
+                // Patrón 1: 13 caracteres (Ej: PQ123456789ES)
+                if (/^[LPCREU][A-Z]\d{9}[A-Z]{2}$/i.test(potentialCode)) {
+                    return potentialCode;
+                }
+                // Patrón 2: Códigos logísticos largos (Ej: PQABAC0408979900135210P)
+                if (/^[LPCREU][A-Z][A-Z0-9]{8}\d{12}[A-Z0-9]$/i.test(potentialCode)) {
+                    return potentialCode;
+                }
+            }
+        }
         return null;
     }
 
